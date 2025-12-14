@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ugo Moscatelli — Disegno e pittura figurativa</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Times New Roman", serif;
+      background: #faf9f6;
+      color: #222;
+      padding: 0;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.2rem;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid #e0dcd3;
+    }
+    .header h1 {
+      font-size: 1.75rem;
+    }
+    .header .subtitle {
+      font-style: italic;
+      color: #666;
+      margin-top: 0.4rem;
+    }
+    .header .location {
+      color: #888;
+      margin-top: 0.3rem;
+    }
+    .intro {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin: 2rem 0 2.5rem;
+      padding: 0 8px;
+      color: #222;
+      text-align: justify;
+    }
+    .intro::first-letter {
+      font-size: 1.4em;
+      font-weight: bold;
+      float: left;
+      margin: 0 6px 0 0;
+      line-height: 1;
+    }
+    .gallery-wrapper {
+      width: 100%;
+      overflow: hidden;
+      background: #faf9f6;
+      padding: 18px 0 24px;
+    }
+    .gallery {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 0 16px;
+      justify-content: center;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+    }
+    .gallery::-webkit-scrollbar {
+      height: 6px;
+    }
+    .gallery::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 3px;
+    }
+    .thumb {
+      flex: 0 0 auto;
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 1px solid #dcd7c9;
+      border-radius: 4px;
+      scroll-snap-align: start;
+      transition: opacity 0.2s;
+    }
+    .thumb:hover {
+      opacity: 0.85;
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.92);
+      z-index: 1000;
+      padding: 20px;
+      cursor: pointer;
+    }
+    .lightbox.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lightbox-content {
+      max-width: 90vw;
+      max-height: 85vh;
+      text-align: center;
+    }
+    .lightbox img {
+      max-width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      border: none;
+    }
+    .lightbox .caption {
+      margin-top: 16px;
+      color: white;
+      font-style: italic;
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+    .lightbox .caption strong {
+      font-style: normal;
+      font-weight: bold;
+    }
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      padding: 1.5rem 0 0;
+      border-top: 1px solid #e0dcd3;
+      color: #777;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>Ugo Moscatelli</h1>
+      <div class="subtitle">Disegno e pittura figurativa</div>
+      <div class="location">Trani, 2025</div>
+    </div>
+
+    <div class="intro">
+      Guardare, per me, è un atto di fedeltà.<br>
+      Che sia un volto, un oggetto o un’ombra del passato, descrivo ciò che la luce mostra — accarezzando una stoffa rossa, la ruga di un volto, il silenzio di un nudo teschio, la grazia di un gesto dimenticato.<br>
+      Grafite, carboncino o olio dischiudono ciò che merita di essere visto e ricordato.<br>
+      Non clamore, ma realtà.
+    </div>
+  </div>
+
+  <div class="gallery-wrapper">
+    <div class="gallery" id="gallery"></div>
+  </div>
+
+  <div class="container">
+    <footer>
+      &copy; Ugo Moscatelli – All rights reserved.<br>
+      Opera originale realizzata dall’artista.<br>
+      Ogni utilizzo non autorizzato è vietato.
+    </footer>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-content">
+      <img id="lightbox-img" src="" alt="">
+      <div class="caption" id="lightbox-caption"></div>
+    </div>
+  </div>
+
+  <script>
+    const opere = [
+      { file: "01_Ivanka_Rosso.jpg", title: "ivanka – dama in rosso", desc: "olio su tela, cm 70×50, 2020" },
+      { file: "02_Sophia_Loren.jpg", title: "sophia loren", desc: "grafite su carta fabriano, cm 48×35, 2019" },
+      { file: "03_Tonio.jpg", title: "tonio", desc: "grafite su carta fabriano, cm 48×35, 2018" },
+      { file: "04_Rino.jpg", title: "rino", desc: "grafite su carta fabriano, cm 48×35, 2018" },
+      { file: "05_Beppe_N1920.jpg", title: "beppe_1920", desc: "grafite su carta fabriano, cm 48×35, 2020" },
+      { file: "06_Ricordi_Infanzia.jpg", title: "ricordi d’infanzia", desc: "olio su tela, cm 50×30, 2020" },
+      { file: "07_Natura_Morta.jpg", title: "natura morta con brocche e arance", desc: "olio su tela, cm 70×50, 2025" },
+      { file: "08_Campi_di_lavanda.jpg", title: "campi di lavanda", desc: "olio su tela, cm 40×50, 2025" },
+      { file: "09_Teschio.jpg", title: "studio di un teschio", desc: "grafite su carta fabriano, cm 35×48, 2018" }
+    ];
+
+    const g = document.getElementById('gallery');
+    opere.forEach(o => {
+      const i = document.createElement('img');
+      i.src = `opere/${o.file}`;
+      i.alt = o.title;
+      i.className = 'thumb';
+      i.onclick = () => {
+        document.getElementById('lightbox-img').src = `opere/${o.file}`;
+        document.getElementById('lightbox-caption').innerHTML = `<strong>${o.title}</strong><br>${o.desc}`;
+        document.getElementById('lightbox').classList.add('active');
+      };
+      g.appendChild(i);
+    });
+
+    document.getElementById('lightbox').onclick = e => {
+      if (e.target === document.getElementById('lightbox')) {
+        e.target.classList.remove('active');
+      }
+    };
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.getElementById('lightbox').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>
